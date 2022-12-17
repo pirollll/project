@@ -1,0 +1,6 @@
+Requeriments
+
+Flask
+JS
+Bootstrap
+JQuery

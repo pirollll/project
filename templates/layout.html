@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <!-- http://getbootstrap.com/docs/5.1/ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"></script>
+    <script src="./static/jquery.js"></script>
+    <link href="/static/favicon.ico" rel="icon">
+    <link href="/static/styles.css" rel="stylesheet">
+
+    <title>Chat CS50</title>
+</head>
+
+<body>
+
+    <script>
+        var avatars = [
+            { src: 'https://chatcs50.000webhostapp.com/00.png' },
+            { src: 'https://chatcs50.000webhostapp.com/01.png' },
+            { src: 'https://chatcs50.000webhostapp.com/02.png' },
+            { src: 'https://chatcs50.000webhostapp.com/03.png' },
+            { src: 'https://chatcs50.000webhostapp.com/04.png' },
+            { src: 'https://chatcs50.000webhostapp.com/05.png' },
+            { src: 'https://chatcs50.000webhostapp.com/06.png' },
+        ]
+
+    </script>
+    <main class="divGeral" id="history">
+        <div>
+            <ul id="ulMsgList">
+                {% if messages|length >= 1 %}
+                    {% for msg in messages %}
+                    <li>
+                        <div class="input-group-text p-1 border-1 border-top-0">
+                            <script>
+                                var strSRC = (avatars['{{msg.avatar}}'].src)
+                                document.write(`<img src="${strSRC}" class="p-1 rounded-circle" alt="..." width="32">`)
+                            </script>
+                            <label class="input-group-text " for="inputGroupSelect02">{{msg.sender}}</label>
+                            <label class="input-group-text form-control border-0 text-wrap text-start"
+                                for="inputGroupSelect02">{{msg.message}} ({{msg.created_at}})</label>
+                        </div>
+                    </li>
+                    {% endfor %}
+                    {% if messages|length >= 2 %}
+                        {% set last = messages|last %}
+                    {% else %}
+                        {% set last = messages|first %}
+                    {% endif %}
+                    <script>
+                        var last = '{{ last.created_at }}'
+                    </script>
+                {% else %}
+                    {% set last = '2001-01-01 01:01:01' %}
+                    <script>
+                        var last = '{{ last }}'
+                        console.log(last)
+                    </script>
+                {% endif %}
+            </ul>
+        </div>
+    </main>
+
+    <div id="menu_mensage">
+        <div class="input-group mb-3 px-5">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">Actions</button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#mdlLogin" href="#">Login</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#mdlRegister" href="#">Register</a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#mdlAbout" href="#">About</a></li>
+            </ul>
+            <label class="input-group-text" for="inputGroupSelect02" id="lbl_id">Guest
+                <script>document.write(parseInt(Math.random() * 1000))</script>
+            </label>
+            <input class="form-control" type="text" id="txt_msg" name="txt_msg" value="Write a message">
+            <button class="btn btn-outline-secondary" type="button" id="btn_msg">Send</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mdlLogin" tabindex="-1" aria-labelledby="mdlLoginLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="formLogin">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mdlLoginLabel">Already Registered? Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username"
+                                name="username" placeholder="Username" type="text">
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control mx-auto w-auto" id="password" name="password"
+                                placeholder="Password" type="password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <label class="input-group-text form-control bg-transparent border-0 col align-self-start"
+                            id="lblLogin"></label>
+                        <button class="btn btn-primary" type="submit" id="btnLogin">Log In</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+                <script>
+
+                    let btnLogin = document.querySelector('#btnLogin')
+                    let btnLogoff = document.querySelector('#btnLogoff')
+
+
+                    $("#btnLogin").click(function (ev) {
+                        // evita o refresh da pagina (comportamento default do botao/form)
+                        ev.preventDefault();
+                        login()
+                    });
+
+                    var mdlLogin = document.querySelector('#mdlLogin')
+                    mdlLogin.addEventListener('hidden.bs.modal', (e) => {
+                        if (sessionStorage.getItem('user') == document.querySelector(`#username`).value) {
+                            btnLogin.innerText = "Login"
+                            btnLogin.removeAttribute('disabled')
+                            document.querySelector(`#username`).removeAttribute('disabled')
+                            document.querySelector(`#password`).removeAttribute('disabled')
+                            document.querySelector(`#lblLogin`).innerText = "Login status...  Logged"
+                        }
+                    })
+
+                    async function login() {
+                        // faz uma chamada POST com os dados
+                        let response = await fetch(`/login`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            method: 'POST',
+                            body: JSON.stringify({ username: document.querySelector(`#username`).value, password: document.querySelector(`#password`).value })
+                        })
+                        let loaded = await response.json()
+                        // configura o modal e mostra status
+                        str = "Login status...  "
+                        if (loaded.status == 'Success') {
+                            sessionStorage.setItem('user', document.querySelector(`#username`).value);
+                            btnLogin.innerText = "Success"
+                            btnLogin.setAttribute('disabled', '')
+                            document.querySelector(`#username`).setAttribute('disabled', '')
+                            document.querySelector(`#password`).setAttribute('disabled', '')
+                            document.querySelector(`#lbl_id`).innerText = loaded.username
+                        }
+                        str += loaded.status
+                        document.querySelector(`#lblLogin`).innerText = str
+                    }
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mdlRegister" tabindex="-1" aria-labelledby="mdlRegisterLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="formRegister">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mdlRegisterLabel">Register</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="RegUsername"
+                                name="RegUsername" placeholder="Username" type="text">
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control mx-auto w-auto" id="RegPassword" name="RegPassword"
+                                placeholder="Password" type="password">
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control mx-auto w-auto" id="RegConfirmation" name="RegConfirmation"
+                                placeholder="Repeat Password" type="password">
+                        </div>
+                        <div class="d-flex justify-content-center" id="divAvatars">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <label class="input-group-text form-control bg-transparent border-0 col align-self-start"
+                            id="lblRegister"></label>
+                        <button class="btn btn-primary" type="submit" id="btnRegister">Register</button>
+                        <button type="button" class="btn btn-secondary" data-bs-target="#mdlLogin"
+                            data-bs-toggle="modal">Login</button>
+                    </div>
+                </form>
+                <script>
+
+                    avatars.forEach((e, i) => {
+                        sessionStorage.setItem('avatar', 0)
+                        var img = $(`<img src="${avatars[i].src}" id="imgAvatar${i}" class="user p-1 avatar ${i == 0 && "avatarSelected"}" width="50">`)
+                        $("#divAvatars").append(img)
+                        $(`#imgAvatar${i}`).on("click", () => {
+                            avatars.forEach((e, j) => {
+                                $(`#imgAvatar${j}`).removeClass('avatarSelected')
+                            })
+                            $(`#imgAvatar${i}`).addClass('avatarSelected')
+                            sessionStorage.setItem('avatar', i)
+                            //console.log(img)
+
+                        })
+
+                    })
+
+                    let btnRegister = document.querySelector('#btnRegister')
+
+                    $("#btnRegister").click(function (ev) {
+                        // evita o refresh da pagina (comportamento default do botao/form)
+                        ev.preventDefault();
+                        register()
+                    });
+
+                    var mdlReg = document.querySelector('#mdlRegister')
+                    mdlReg.addEventListener('hidden.bs.modal', (e) => {
+                        btnRegister.innerText = "Register"
+                        btnRegister.removeAttribute('disabled')
+                        document.querySelector(`#RegUsername`).removeAttribute('disabled')
+                        document.querySelector('#RegUsername').value = ""
+                        document.querySelector(`#RegPassword`).removeAttribute('disabled')
+                        document.querySelector('#RegPassword').value = ""
+                        document.querySelector(`#RegConfirmation`).removeAttribute('disabled')
+                        document.querySelector('#RegConfirmation').value = ""
+                        document.querySelector(`#lblRegister`).innerText = ""
+                    })
+
+                    async function register() {
+                        // faz uma chamada POST com os dados
+                        let response = await fetch(`/register`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            method: 'POST',
+                            body: JSON.stringify({ username: document.querySelector(`#RegUsername`).value, password: document.querySelector(`#RegPassword`).value, confirmation: document.querySelector(`#RegConfirmation`).value, avatar: sessionStorage.getItem('avatar') })
+                        })
+                        let loaded = await response.json()
+                        // configura o modal e mostra status
+                        str = "Register status...  "
+                        if (loaded.status == 'Success') {
+                            btnRegister.innerText = "Success"
+                            btnRegister.setAttribute('disabled', '')
+                            document.querySelector(`#RegUsername`).setAttribute('disabled', '')
+                            document.querySelector(`#RegPassword`).setAttribute('disabled', '')
+                            document.querySelector(`#RegConfirmation`).setAttribute('disabled', '')
+                        }
+                        str += loaded.status
+                        document.querySelector(`#lblRegister`).innerText = str
+                    }
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mdlAbout" tabindex="-1" aria-labelledby="mdlAboutLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="formAbout">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mdlAboutLabel">About</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card mb-3" style="max-width: 540px;">
+                            <div class="row g-0">
+                              <div class="col-md-4">
+                                <img src="./static/about.jpg" class="img-fluid rounded-start" alt="...">
+                              </div>
+                              <div class="col-md-8">
+                                <div class="card-body">
+                                  <h5 class="card-title">The amazing creator</h5>
+                                  <p class="card-text">A little about me...</p>
+                                  <p class="card-text"><small class="text-muted"><a target="_blank" href="https://www.linkedin.com/in/evandro-iaczinski-816511162">Linkedin</a> - hire-me</small>
+                                  <small class="text-muted"><a target="_blank" href="">evandronauta@gmail.com</a> - mail-me</small>
+                                  <small class="text-muted"><a target="_blank" href="https://www.instagram.com/evandronauta/">@evandronauta</a> - instagram-me</small></p>                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    var objDiv = document.querySelector(`#history`)
+    objDiv.scrollTop = objDiv.scrollHeight // baixa a barra de rolagem
+
+    btn_msg = document.querySelector(`#btn_msg`)
+    $(btn_msg).click(mandaMsg) // configura botao enviar
+    $(txt_msg).on('keypress', (e) => e.which == 13 ? mandaMsg() : 0) // configura [enter] no campo de texto
+    updtMsg() // funcao para buscar por novas mensagens no servidor
+
+    function mandaMsg() {
+        // cria obj_msg com os dados da mensagem
+        // funcao ficou subutilizada com a implementacao do enviaMsg, refatorar
+        let obj_msg = {
+            sender: document.querySelector(`#lbl_id`).innerText,
+            message: document.querySelector(`#txt_msg`).value,
+            date: new Date(Date.now()),
+        }
+        //incluirMsg(obj_msg)
+        enviaMsg()
+        document.querySelector(`#txt_msg`).value = ""
+    }
+
+    function incluirMsg(objeto) {
+        // adiciona mensagem na tela do usuario
+        // cria os elementos html e coloca na lista
+        var lista = $(`<li></li>`)
+        var div = $(`<div class="input-group-text p-1 border-top-0"></div>`)
+        var img = $(`<img src="${avatars[objeto.avatar].src}" class="user p-1 rounded-circle" alt="..." width="32">`)
+        var lbl_id = $(`<label class="input-group-text rounded" for="inputGroupSelect02">${objeto.sender}</label>`)
+        var lbl_msg = $(`<label class="input-group-text form-control border-0 text-wrap text-start" for="inputGroupSelect02">${objeto.message} (${objeto.created_at})</label>`)
+        div.append(img)
+        div.append(lbl_id)
+        div.append(lbl_msg)
+        lista.append(div)
+        $("#ulMsgList").append(lista)
+        var objDiv = document.querySelector(`#history`)
+        objDiv.scrollTop = objDiv.scrollHeight
+    }
+
+    async function enviaMsg() {
+        // funcao para enviar msg para o servidor
+        // prepara o fetch com GET e os dados enviados
+        // o retorno da mensagem para mostrar vai vir pelo updtMsg, que vai ser devolvido pelo servidor qdo atualizar 
+        let sender = document.querySelector(`#lbl_id`).innerText
+        let msg = document.querySelector(`#txt_msg`).value
+        let response = await fetch(`/msg?a=msg&sender=${sender}&message=${msg}`)
+        let loaded = await response.json()
+    }
+
+    async function updtMsg() {
+        // passa o horario da ultima mensagem para o servidor e aguarda nova mensagem
+        let sender = document.querySelector(`#lbl_id`).innerText
+        let response = await fetch(`/msg?a=updt&last=${last}`)
+        let loaded = await response.json()
+        // se vier nova mensagem, prepara e aciona incluiMsg para mostrar na tela
+        if (loaded.message != '__none__') {
+            last = loaded.created_at
+            //console.log('Incluindo... ' + JSON.stringify(loaded))
+            incluirMsg(loaded)
+            // depois de incluir na tela, faz nova chamada para aguardar mensagem
+            updtMsg()
+        }
+    }
+
+</script>
+
+</html>
