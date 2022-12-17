@@ -25,4 +25,4 @@ The [chat.db] database contains the (users) and (msgs) tables to record register
 
 [static/styles.css] was used to keep the message list responsive and some avatar effects.
 
-# Hi, Evandro here, from Brazil, and this is my final project. It's a chat, discord like aplication, with some features. Take a look.
+### Hi, Evandro here, from Brazil, and this is my final project. It's a chat, discord like aplication, with some features. Take a look.
