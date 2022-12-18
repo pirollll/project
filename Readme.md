@@ -24,3 +24,4 @@ The [chat.db] database contains the (users) and (msgs) tables to record register
 [sql_cmd/create.sql] was used to create the chat.db tables.
 
 [static/styles.css] was used to keep the message list responsive and some avatar effects.
+
