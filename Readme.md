@@ -1,5 +1,5 @@
 # Chat CS50
-#### Video Demo:  <URL HERE>
+#### Video Demo:  <https://youtu.be/MpPZyOIY9ZM>
 #### Description:
 
 This is my final project to CS50x 2022 Course.
