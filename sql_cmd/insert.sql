@@ -10,7 +10,7 @@ INSERT INTO users (username, hash) VALUES ("novo", "pbkdf2:sha256:260000$c8c8J0n
 SELECT * FROM msgs ORDER BY created_at DESC LIMIT 1;
 
 
-DELETE FROM msgs;
+DELETE FROM users WHERE id > 1;
 
 
 SELECT EXISTS (SELECT 1 FROM msgs);
